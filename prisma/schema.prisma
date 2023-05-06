@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "views"]
+}
+
+datasource db {
+  provider = "sqlite"
+  // use file
+  url = "file:./dev.db"
+}
+
+model User {
+  id        String  @id @default(uuid())
+  email     String  @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  calendars Calendar[]
+  profile   Profile?
+  settings  Settings?
+  @@index([email])
+}
+
+model Settings {
+  id        String  @id @default(uuid())
+  postalCode String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @unique
+  darkMode  Boolean @default(false)
+  language  String  @default("en")
+  timeZone  String  @default("UTC")
+}
+
+model Profile {
+  id String @id @default(uuid())
+  bio String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  image String?
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
+  
+}
+
+model Calendar {
+  id        String  @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  color     String  @default("blue")
+  userId    String 
+  user      User    @relation(fields: [userId], references: [id])
+  events    CalendarEvent[]
+  calendarMembers CalendarMember[]
+}
+
+model CalendarMember {
+  id           String @id @default(uuid())
+  email        String
+  calendarId   String 
+  calendar     Calendar @relation(fields: [calendarId], references: [id])
+  role         String @default("read")
+  createdAt    DateTime @default(now())
+}
+
+model CalendarEvent {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  start       String
+  end         String
+  calendar    Calendar @relation(fields: [calendarId], references: [id])
+  calendarId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+view CalendarEventView {
+  id          String
+  title       String
+  description String?
+  start       DateTime
+  end         DateTime
+  calendarId  String
+  createdAt   String
+  updatedAt   String
+  userId      String
+  color       String
+  name        String
+  email       String @unique
+  bio         String?
+  image       String?
+}

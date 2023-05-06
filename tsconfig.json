@@ -13,7 +13,11 @@
     "noImplicitAny": false,
     "sourceMap": true,
     "lib": ["ESNext"],
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
+    "paths": {
+       "@/*": ["src/*"]
+    },                             
   },
   "compileOnSave": true,
   "include": ["src"]
